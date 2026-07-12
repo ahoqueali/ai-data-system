@@ -17,6 +17,18 @@ opencode.json       <- opencode config with DuckDB MCP server
 
 ---
 
+## Why DuckDB?
+
+DuckDB is used in this project because:
+
+- **Zero infrastructure** — no cloud account, no `bq` CLI, no credentials; just a local file (`data.duckdb`)
+- **Instant iteration** — DDL changes and queries run in milliseconds, not the seconds-to-minutes of remote warehouse round-trips
+- **Reproducible** — anyone can clone the repo and run the full stack with `pip install duckdb pyyaml && python scripts/generate_ddl.py`
+- **Same SQL dialect** — DuckDB's SQL is a strict superset of BigQuery's; migration back to BigQuery later requires only a DDL translation step
+- **No throughput billing** — BigQuery charges $5 per TB scanned; without well-designed partitioning and clustering, a naive `SELECT *` on a large table can rack up significant costs. DuckDB is free and runs entirely on your machine, so ad-hoc exploration and repeated dev queries cost nothing regardless of how the data is organized
+
+---
+
 ## The Three Layers
 
 The dependency flows in one direction:
@@ -278,6 +290,42 @@ If a column is renamed or a table migrated, only the data model and its direct s
 
 ---
 
+## Installing opencode
+
+### Quick Install (recommended)
+
+```bash
+curl -fsSL https://opencode.ai/install | bash
+```
+
+This installs opencode to `~/.opencode/bin/opencode`. Add it to your PATH:
+
+```bash
+export PATH="$HOME/.opencode/bin:$PATH"
+```
+
+### Alternative Methods
+
+**npm:**
+```bash
+npm install -g @opencode-ai/cli
+```
+
+**Homebrew:**
+```bash
+brew install opencode
+```
+
+### Verify Installation
+
+```bash
+opencode --version
+```
+
+For full documentation, visit [opencode.ai/docs](https://opencode.ai/docs).
+
+---
+
 ## Querying with DuckDB via opencode
 
 ### Setup
@@ -363,14 +411,6 @@ conn = duckdb.connect('data.duckdb', read_only=True)
 result = conn.execute("SELECT * FROM core.customer LIMIT 5").fetchall()
 conn.close()
 ```
-
-### Regenerate DDL (for BigQuery deployment)
-
-```bash
-python scripts/generate_ddl.py --apply
-```
-
-Requires the `bq` CLI to be configured with appropriate credentials.
 
 ---
 
