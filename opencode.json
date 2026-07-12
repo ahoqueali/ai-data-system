@@ -1,0 +1,13 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "mcp": {
+    "duckdb": {
+      "type": "local",
+      "command": ["python3", "scripts/duckdb_mcp_server.py"],
+      "enabled": true,
+      "env": {
+        "DUCKDB_PATH": "/home/ahoque/Projects/big-query-reporting/data.duckdb"
+      }
+    }
+  }
+}
